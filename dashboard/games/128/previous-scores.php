@@ -25,6 +25,117 @@ $user = $_SESSION['userEmail'];
         $result1 = mysqli_query($con, $sql1);  
         $count1 = mysqli_num_rows($result1);
 
+
+$sqlStats = "select * from ekatoneikosiokto where user = '$user'";  
+        $resultStats = mysqli_query($con, $sqlStats);  
+        $countStats = mysqli_num_rows($resultStats);
+
+
+
+
+
+$maxScoreRight = 0;
+$maxScoreRightTime = 0;
+	$maxScoreLeft = 0;
+$maxScoreLeftTime = 0;
+	$minScoreRight = 5000;
+$minScoreRightTime = 5000;
+	$minScoreLeft = 5000;
+$minScoreLeftTime = 5000;
+	$averageScoreRight = 0;
+$averageScoreRightTime = 0;
+	$averageScoreLeft = 0;
+$averageScoreLeftTime = 0;
+$rightScoresCounter = 0;
+$leftScoresCounter = 0;
+ $maxScoreRightDate;
+ $maxScoreLeftDate;
+ $minScoreRightDate;
+ $minScoreLeftDate;
+
+		while($row = mysqli_fetch_array($resultStats)) {
+		
+			$actualScore = $row['score'];
+			$actualHand = $row['hand'];
+			
+		
+			if ($actualHand == "Right") {
+				if ($actualScore > $maxScoreRight) {
+					$maxScoreRight = $actualScore;
+					$maxScoreRightTime = $row['time'];
+					$dateOfmaxR=$row['reg_date'];
+					 $maxScoreRightDate = date('d-m-Y', strtotime($dateOfmaxR));
+				} else if ($actualScore == $maxScoreRight) {
+					if ($row['time'] < $maxScoreRightTime) {
+					$maxScoreRightTime = $row['time'];
+					$dateOfmaxR=$row['reg_date'];
+					 $maxScoreRightDate = date('d-m-Y', strtotime($dateOfmaxR));
+				}
+				}
+				
+				$averageScoreRight = $averageScoreRight + $actualScore;
+				$averageScoreRightTime = $averageScoreRightTime + $row['time'];
+				$rightScoresCounter++;
+				
+			} else {
+			if ($actualScore > $maxScoreLeft) {
+					$maxScoreLeft = $actualScore;
+				$maxScoreLeftTime = $row['time'];
+				$dateOfmaxL=$row['reg_date'];
+					 $maxScoreLeftDate = date('d-m-Y', strtotime($dateOfmaxL));
+				} else if ($actualScore == $maxScoreLeft) {
+					if ($row['time'] < $maxScoreLeftTime) {
+					$maxScoreLeftTime = $row['time'];
+					$dateOfmaxL=$row['reg_date'];
+					 $maxScoreLeftDate = date('d-m-Y', strtotime($dateOfmaxL));
+				}
+				}	 
+				
+				$averageScoreLeft = $averageScoreLeft + $actualScore;
+				$averageScoreLeftTime = $averageScoreLeftTime + $row['time'];
+				$leftScoresCounter++;
+					
+			}
+		
+		
+			if ($actualHand == "Right") {
+				if ($actualScore < $minScoreRight) {
+					$minScoreRight = $actualScore;
+					$minScoreRightTime = $row['time'];
+						$dateOfminR=$row['reg_date'];
+					 $minScoreRightDate = date('d-m-Y', strtotime($dateOfminR));
+				} else if ($actualScore == $minScoreRight) {
+					if ($row['time'] > $minScoreRightTime) {
+					$minScoreRightTime = $row['time'];
+					$dateOfminR=$row['reg_date'];
+					 $minScoreRightDate = date('d-m-Y', strtotime($dateOfminR));
+				}
+				}
+			} else {
+			if ($actualScore < $minScoreLeft) {
+					$minScoreLeft = $actualScore;
+				$minScoreLeftTime = $row['time'];
+					$dateOfminL=$row['reg_date'];
+					 $minScoreLeftDate = date('d-m-Y', strtotime($dateOfminL));
+				} else if ($actualScore == $minScoreLeft) {
+					if ($row['time'] > $minScoreLeftTime) {
+					$minScoreLeftTime = $row['time'];
+					$dateOfminL=$row['reg_date'];
+					 $minScoreLeftDate = date('d-m-Y', strtotime($dateOfminL));
+				}
+				}	
+			} 
+			
+		
+			}
+
+
+			$averageScoreRight = $averageScoreRight / $rightScoresCounter;
+				$averageScoreLeft = $averageScoreLeft / $leftScoresCounter;
+		$averageScoreRightTime = $averageScoreRightTime / $rightScoresCounter;
+				$averageScoreLeftTime = $averageScoreLeftTime / $leftScoresCounter;
+
+
 ?>
 
 <!DOCTYPE html>
@@ -67,10 +178,121 @@ $user = $_SESSION['userEmail'];
 	
 	<h1 id="pageTitle">128</h1>
 	
-<p style="text-align: center;">Check the previous scores you have achieved.</p>
+<p style="text-align: center;">Check the previous scores you have achieved (for score column higher scores are better, while for time column lower scores are better).</p>
 	
-	<div class="row">
+		<div class="row">
+				<div class="column1">
+				<h3 style="text-align: center;">Statistics</h3>
+				<?php if($countStats > 0) {
+		echo "<table>
+					<tr>
+						<th>Max Score (Right)</th>
+		<th>Min Score (Right)</th>
+			<th>Average Score (Right)</th>
+					</tr>";
+	
+
+			
+			
+			echo "<tr><td>Score: ";
+			
+			echo $maxScoreRight;
+	
+	echo "<br> Time: ";
+	
+	echo $maxScoreRightTime;
+	
+			echo "<br> (on ";
+		echo $maxScoreRightDate;
+			echo ")";
+			
+			echo "</td><td> Score: ";
+			
+			echo $minScoreRight;
+	
+		echo "<br> Time: ";
+	
+	echo $minScoreRightTime;
+	
+		echo "<br> (on ";
+		echo $minScoreRightDate;
+			echo ")";
+			
+			echo "</td><td>Score: ";
+			
+			echo $averageScoreRight;
+	
+		echo "<br> Time: ";
+	
+	echo $averageScoreRightTime;
+			
+			echo "</td></tr>";
+	
+	
+	
+		echo "<tr>
+		<th>Max Score (Left)</th>
+		<th>Min Score (Left)</th>
+		<th>Average Score (Left)</th>
+					</tr>";
+	
+	
+			
+					echo "<tr><td>Score: ";
+			
+			echo $maxScoreLeft;
+	
+	echo "<br> Time: ";
+	
+	echo $maxScoreLeftTime;
+	
+			echo "<br> (on ";
+		echo $maxScoreLeftDate;
+			echo ")";
+			
+			echo "</td><td> Score: ";
+			
+			echo $minScoreLeft;
+	
+		echo "<br> Time: ";
+	
+	echo $minScoreLeftTime;
+	
+		echo "<br> (on ";
+		echo $minScoreLeftDate;
+			echo ")";
+			
+			echo "</td><td>Score: ";
+			
+			echo $averageScoreLeft;
+	
+		echo "<br> Time: ";
+	
+	echo $averageScoreLeftTime;
+			
+			echo "</td></tr>";
+	
+	echo "</table>";
+		} else {
+		echo "<p style='text-align: center;'>There are no scores saved yet.</p>";		
+}
+				?>
+				
+			</div>
+	
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	
+		<div class="row">
+
 		<div class="column1">
+		<h3 style="text-align: center;">Individual Scores</h3>
 		
 		<?php if($count1 > 0) {
 	
