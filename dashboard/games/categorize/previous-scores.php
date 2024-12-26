@@ -25,6 +25,79 @@ $user = $_SESSION['userEmail'];
         $result1 = mysqli_query($con, $sql1);  
         $count1 = mysqli_num_rows($result1);
 
+
+
+$sqlStats = "select * from categorize where user = '$user'";  
+        $resultStats = mysqli_query($con, $sqlStats);  
+        $countStats = mysqli_num_rows($resultStats);
+
+
+
+
+
+$maxScoreRight = 0;
+	$maxScoreLeft = 0;
+	$minScoreRight = 5000;
+	$minScoreLeft = 5000;
+	$averageScoreRight = 0;
+	$averageScoreLeft = 0;
+$rightScoresCounter = 0;
+$leftScoresCounter = 0;
+ $maxScoreRightDate;
+ $maxScoreLeftDate;
+ $minScoreRightDate;
+ $minScoreLeftDate;
+
+		while($row = mysqli_fetch_array($resultStats)) {
+		
+			$actualScore = $row['score'];
+			$actualHand = $row['hand'];
+			
+		
+			if ($actualHand == "Right") {
+				if ($actualScore > $maxScoreRight) {
+					$maxScoreRight = $actualScore;
+					$dateOfmaxR=$row['reg_date'];
+					 $maxScoreRightDate = date('d-m-Y', strtotime($dateOfmaxR));
+				}
+				
+				$averageScoreRight = $averageScoreRight + $actualScore;
+				$rightScoresCounter++;
+				
+			} else {
+			if ($actualScore > $maxScoreLeft) {
+					$maxScoreLeft = $actualScore;
+				$dateOfmaxL=$row['reg_date'];
+					 $maxScoreLeftDate = date('d-m-Y', strtotime($dateOfmaxL));
+				}	
+				
+				$averageScoreLeft = $averageScoreLeft + $actualScore;
+				$leftScoresCounter++;
+					
+			}
+		
+		
+			if ($actualHand == "Right") {
+				if ($actualScore < $minScoreRight) {
+					$minScoreRight = $actualScore;
+						$dateOfminR=$row['reg_date'];
+					 $minScoreRightDate = date('d-m-Y', strtotime($dateOfminR));
+				}
+			} else {
+			if ($actualScore < $minScoreLeft) {
+					$minScoreLeft = $actualScore;
+					$dateOfminL=$row['reg_date'];
+					 $minScoreLeftDate = date('d-m-Y', strtotime($dateOfminL));
+				}	
+			} 
+			
+		
+			}
+
+
+			$averageScoreRight = $averageScoreRight / $rightScoresCounter;
+				$averageScoreLeft = $averageScoreLeft / $leftScoresCounter;
+
 ?>
 
 <!DOCTYPE html>
@@ -67,11 +140,97 @@ $user = $_SESSION['userEmail'];
 	
 	<h1 id="pageTitle">Categorize</h1>
 	
-<p style="text-align: center;">Check the previous scores you have achieved.</p>
+<p style="text-align: center;">Check the previous scores you have achieved (higher scores are better).</p>
 	
-	<div class="row">
+<div class="row">
+				<div class="column1">
+				<h3 style="text-align: center;">Statistics</h3>
+				<?php if($countStats > 0) {
+		echo "<table>
+					<tr>
+						<th>Max Score (Right)</th>
+		<th>Min Score (Right)</th>
+			<th>Average Score (Right)</th>
+					</tr>";
+	
+
+			
+			
+			echo "<tr><td>";
+			
+			echo $maxScoreRight;
+	
+			echo " (on ";
+		echo $maxScoreRightDate;
+			echo ")";
+			
+			echo "</td><td>";
+			
+			echo $minScoreRight;
+	
+		echo " (on ";
+		echo $minScoreRightDate;
+			echo ")";
+			
+			echo "</td><td>";
+			
+			echo $averageScoreRight;
+			
+			echo "</td></tr>";
+	
+	
+	
+		echo "<tr>
+		<th>Max Score (Left)</th>
+		<th>Min Score (Left)</th>
+		<th>Average Score (Left)</th>
+					</tr>";
+	
+	
+			
+			echo "<tr><td>";
+			
+			echo $maxScoreLeft;
+	
+		echo " (on ";
+		echo $maxScoreLeftDate;
+			echo ")";
+			
+			echo "</td><td>";
+			
+			echo $minScoreLeft;
+			
+		echo " (on ";
+		echo $minScoreLeftDate;
+			echo ")";
+			
+			echo "</td><td>";
+			
+			echo $averageScoreLeft;
+			
+			echo "</td></tr>";
+	
+	echo "</table>";
+		} else {
+		echo "<p style='text-align: center;'>There are no scores saved yet.</p>";		
+}
+				?>
+				
+			</div>
+	
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	
+		<div class="row">
+
 		<div class="column1">
-		
+		<h3 style="text-align: center;">Individual Scores</h3>
 		<?php if($count1 > 0) {
 	
 	
